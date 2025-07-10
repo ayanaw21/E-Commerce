@@ -8,6 +8,7 @@ from .views import (
     PasswordTokenCheckAPI,
     SetNewPasswordAPIView,
     GoogleLoginView,
+    ProfileAPIView,
 )
 
 urlpatterns = [
@@ -20,4 +21,5 @@ urlpatterns = [
     path('password-reset/<uidb64>/<token>/', PasswordTokenCheckAPI.as_view(), name='password-reset-confirm'),
     path('password-reset-complete/', SetNewPasswordAPIView.as_view(), name='password-reset-complete'),
     path('google/', GoogleLoginView.as_view(), name='google_login'),
+    path('profile/', ProfileAPIView.as_view(), name='user-profile'),
 ]

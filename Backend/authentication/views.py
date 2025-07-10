@@ -25,8 +25,10 @@ from .serializers import (
     SetNewPasswordSerializer,
     ResetPasswordEmailRequestSerializer,
     AccessTokenOnlySocialLoginSerializer,
+    ProfileSerializer,
     
 )
+from .models import Profile
 from dj_rest_auth.registration.views import SocialLoginView
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 
@@ -209,3 +211,11 @@ class GoogleLoginView(SocialLoginView):
             }, status=status.HTTP_200_OK)
 
         return response
+
+class ProfileAPIView(generics.RetrieveUpdateAPIView):
+    serializer_class = ProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return Profile.objects.get(user__email=self.request.user.email)
+    
