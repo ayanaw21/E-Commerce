@@ -18,7 +18,7 @@ export default function Login() {
   
 	async function handleLogin(formData: FormData) {
 		try {
-			const res = await fetch("/api/auth/login", {
+			const res = await fetch("http://127.0.0.1:8000/login/", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
@@ -30,9 +30,9 @@ export default function Login() {
 			if (!res.ok) throw new Error("Login failed");
 
 			const data = await res.json();
-			if (data.token) {
-				localStorage.setItem("authToken", JSON.stringify(data.token));
-				router.push(data.token.isAdmin ? "/admin" : "/dashboard");
+			if (data.access) {
+				localStorage.setItem("authToken", JSON.stringify(data.access));
+				router.push(data.redirect_url);
 			}
 		} catch (error) {
 			console.error("Login error:", error);
