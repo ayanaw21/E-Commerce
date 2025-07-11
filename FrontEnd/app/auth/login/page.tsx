@@ -13,9 +13,11 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
+import { login } from "../actions";
+import { useActionState } from "react";
 export default function Login() {
 	const router = useRouter();
-  
+  const [state,loginAction] = useActionState(login,undefined)
 	async function handleLogin(formData: FormData) {
 		try {
 			const res = await fetch("http://127.0.0.1:8000/login/", {
@@ -56,7 +58,7 @@ export default function Login() {
 					</CardAction>
 				</CardHeader>
 				<CardContent>
-					<form action={handleLogin}>
+					<form action={loginAction}>
 						<div className="flex flex-col gap-6">
 							<div className="grid w-full max-w-sm items-center gap-3">
 								<Label htmlFor="email">Email address</Label>
@@ -67,6 +69,7 @@ export default function Login() {
 									required
 								/>
 							</div>
+							
 							<div className="grid gap-2">
 								<Label htmlFor="password">Password</Label>
 								<Input

@@ -19,7 +19,7 @@ import { useState } from "react";
 
 export default function Register() {
   const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
 
   async function handleRegister(formData: FormData) {
     try {

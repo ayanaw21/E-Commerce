@@ -1,13 +1,18 @@
-import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import { decrypt } from "@/lib/sessions";
+import { cookies } from "next/headers";
+import { Button } from "./ui/button";
+import { logout } from "@/app/auth/actions";
+const Navbar = async () => {
+	const cookie = (await cookies()).get("session")?.value;
+	const session = await decrypt(cookie);
 
-const Navbar = () => {
 	return (
 		<div>
 			<nav className="bg-white border-gray-200 dark:bg-gray-900">
 				<div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl p-4">
-					<Link 
+					<Link
 						href="/"
 						className="flex items-center space-x-3 rtl:space-x-reverse"
 					>
@@ -15,20 +20,34 @@ const Navbar = () => {
 							Flowbite
 						</span>
 					</Link>
-					<div className="flex items-center space-x-6 rtl:space-x-reverse">
-						<Link
-							href="/auth/login"
-							className="text-sm  text-blue-600 dark:text-blue-500 hover:underline"
-						>
-							Login
-						</Link>
-						<Link
-							href="/auth/signup"
-							className="text-sm  text-blue-600 dark:text-blue-500 hover:underline"
-						>
-							SignUp
-						</Link>
-					</div>
+					{!session ? (
+						<div className="flex items-center space-x-6 rtl:space-x-reverse">
+							<Link
+								href="/auth/login"
+								className="text-sm  text-blue-600 dark:text-blue-500 hover:underline"
+							>
+								Login
+							</Link>
+							<Link
+								href="/auth/signup"
+								className="text-sm  text-blue-600 dark:text-blue-500 hover:underline"
+							>
+								SignUp
+							</Link>
+						</div>
+					) : (
+						<div className="flex items-center space-x-6 rtl:space-x-reverse">
+							<form action={logout}>
+								<Button
+									type="submit"
+									variant="link"
+									className="text-sm text-blue-600 dark:text-blue-500 hover:underline"
+								>
+									Logout
+								</Button>
+							</form>
+						</div>
+					)}
 				</div>
 			</nav>
 			<nav className="bg-gray-50 dark:bg-gray-700">
