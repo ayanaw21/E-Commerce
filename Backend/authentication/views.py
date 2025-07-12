@@ -109,6 +109,7 @@ class LoginView(views.APIView):
             'refresh': str(refresh),
             'access': str(refresh.access_token),
             'redirect_url': redirect_url,
+            'user_id': user.id,
         })
 
 class LogoutView(views.APIView):
