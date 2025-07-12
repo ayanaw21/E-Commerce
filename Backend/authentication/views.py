@@ -218,5 +218,5 @@ class ProfileAPIView(generics.RetrieveUpdateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
-        return Profile.objects.get(user__email=self.request.user.email)
+        return Profile.objects.get(user=self.request.user)
     
