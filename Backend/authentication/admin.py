@@ -1,41 +1,30 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User
+from .models import User, Profile
 
-@admin.register(User)
+class ProfileInline(admin.StackedInline):
+    model = Profile
+    can_delete = False
+    verbose_name_plural = 'Profile'
+
 class UserAdmin(BaseUserAdmin):
-    list_display = (
-        "id", "email", "first_name", "last_name",
-        "is_google_account", "is_verified",
-        "is_active", "is_staff", "is_admin", "is_superuser",
-        "created_at", "updated_at",
-    )
-    list_filter = (
-        "is_google_account", "is_verified", "is_active",
-        "is_staff", "is_admin", "is_superuser",
-    )
-    search_fields = ("email", "first_name", "last_name")
-    ordering = ("email",)
+    inlines = (ProfileInline,)
+    list_display = ('email', 'first_name', 'last_name', 'is_staff', 'is_active')
+    list_filter = ('is_staff', 'is_active', 'is_verified')
+    search_fields = ('email', 'first_name', 'last_name')
+    ordering = ('-created_at',)
 
     fieldsets = (
-        (None, {"fields": ("email", "password")}),
-        ("Personal info", {"fields": ("first_name", "last_name", "profile_image")}),
-        ("Permissions", {
-            "fields": (
-                "is_active", "is_staff", "is_admin", "is_superuser",
-                "groups", "user_permissions",
-            )
-        }),
-        ("Google Login Info", {"fields": ("is_google_account", "is_verified")}),
-        ("Important dates", {"fields": ("last_login", "created_at", "updated_at")}),
+        (None, {'fields': ('email', 'password')}),
+        ('Personal Info', {'fields': ('first_name', 'last_name', 'profile_image')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_admin', 'is_superuser')}),
+        ('Important dates', {'fields': ('last_login', 'created_at', 'updated_at')}),
     )
-
     add_fieldsets = (
         (None, {
-            "classes": ("wide",),
-            "fields": ("email", "first_name", "last_name", "password1", "password2"),
-        }),
+            'classes': ('wide',),
+            'fields': ('email', 'password1', 'password2')}
+        ),
     )
 
-    readonly_fields = ("created_at", "updated_at")
-
+admin.site.register(User, UserAdmin)

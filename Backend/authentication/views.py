@@ -198,6 +198,7 @@ class GoogleLoginView(SocialLoginView):
             redirect_url = "/admin/" if user.is_admin else "/dashboard/"
 
             user_info = {
+                "user_id": user.id,
                 "email": user.email,
                 "first_name": user.first_name,
                 "last_name": user.last_name,
@@ -213,10 +214,10 @@ class GoogleLoginView(SocialLoginView):
 
         return response
 
-class ProfileAPIView(generics.RetrieveUpdateAPIView):
+class UserProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
-        return Profile.objects.get(user=self.request.user)
+        return self.request.user.profile
     
