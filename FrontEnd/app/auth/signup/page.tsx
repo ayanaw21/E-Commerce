@@ -1,7 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,40 +13,40 @@ import {
 import Link from "next/link";
 import FormInput from "@/components/FormInput";
 import SubmitButton from "@/components/SubmitButton";
-import { useActionState } from "react";
-import { register } from "../actions";
+// import { useActionState } from "react";
+// import { register } from "../actions";
 // import { useState } from "react";
 
 export default function Register() {
-  const router = useRouter();
+  const router = useRouter()
   // const [error, setError] = useState<string | null>(null);
-  const [state,registerAction] = useActionState(register,undefined)
+  // const [state,registerAction] = useActionState(register,null)
   async function handleRegister(formData: FormData) {
     try {
-      const formDataToSend = new FormData();
-      formDataToSend.append("email", formData.get("email") as string);
-      formDataToSend.append("password", formData.get("password") as string);
-      formDataToSend.append("confirm_password", formData.get("confirm_password") as string);
-      formDataToSend.append("first_name", formData.get("first_name") as string);
-      formDataToSend.append("last_name", formData.get("last_name") as string);
+     const response = await fetch("http://127.0.0.1:8000/register/",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        email:formData.get("email"),
+        password:formData.get("password"),
+        confirm_password:formData.get("confirm_password"),
+        first_name:formData.get("first_name"),
+        last_name:formData.get("last_name"),
+      })
+     });
+
+     console.log("Response status: ",response.status);
       
-      const file = formData.get("profile_image") as File;
-      if (file) formDataToSend.append("profile_image", file);
-
-      const response = await fetch("http://127.0.0.1:8000/register/", {
-        method: "POST",
-        body: formDataToSend,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Registration failed");
-      }
-
       const data = await response.json();
-      if (data.access_token) {
-        router.push("/auth/login"); // Redirect to login page
+      if(data.access_token){
+
+        console.log(data.message);
+        toast(data.message);
+        router.push("/auth/login")
       }
+      else(
+        toast(data.email)
+      )  
     } catch (error) {
       console.error("Register error", error);
       // setError(error instanceof Error ? error.message : "Registration failed");
@@ -66,7 +65,7 @@ export default function Register() {
           </CardAction>
         </CardHeader>
         <CardContent>
-          <form action={registerAction}>
+          <form action={handleRegister}>
             <FormInput type="text" name="first_name" label="First Name" />
             <FormInput type="text" name="last_name" label="Last Name" />
             <FormInput type="email" name="email" label="Email" />
@@ -76,10 +75,7 @@ export default function Register() {
               name="confirm_password"
               label="Confirm Password"
             />
-            <div className="grid w-full max-w-sm items-center gap-3">
-              <Label htmlFor="profile_image">Profile Image</Label>
-              <Input type="file" name="profile_image" id="profile_image" />
-            </div>
+            
             <SubmitButton className="w-full capitalize" />
           </form>
         </CardContent>
