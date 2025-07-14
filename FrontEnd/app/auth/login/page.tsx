@@ -16,31 +16,30 @@ import Link from "next/link";
 import { login } from "../actions";
 import { useActionState } from "react";
 export default function Login() {
-	const router = useRouter();
   const [state,loginAction] = useActionState(login,undefined)
-	async function handleLogin(formData: FormData) {
-		try {
-			const res = await fetch("http://127.0.0.1:8000/login/", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					email: formData.get("email"),
-					password: formData.get("password"),
-				}),
-			});
-			console.log("Response status:", res.status); // Debug log
-			if (!res.ok) throw new Error("Login failed");
+	// async function handleLogin(formData: FormData) {
+	// 	try {
+	// 		const res = await fetch("http://127.0.0.1:8000/login/", {
+	// 			method: "POST",
+	// 			headers: { "Content-Type": "application/json" },
+	// 			body: JSON.stringify({
+	// 				email: formData.get("email"),
+	// 				password: formData.get("password"),
+	// 			}),
+	// 		});
+	// 		console.log("Response status:", res.status); // Debug log
+	// 		if (!res.ok) throw new Error("Login failed");
 
-			const data = await res.json();
-			if (data.access) {
-				localStorage.setItem("authToken", JSON.stringify(data.access));
-				router.push(data.redirect_url);
-			}
-		} catch (error) {
-			console.error("Login error:", error);
-			// Add toast/alert here
-		}
-	}
+	// 		const data = await res.json();
+	// 		if (data.access) {
+	// 			localStorage.setItem("authToken", JSON.stringify(data.access));
+	// 			router.push(data.redirect_url);
+	// 		}
+	// 	} catch (error) {
+	// 		console.error("Login error:", error);
+	// 		// Add toast/alert here
+	// 	}
+	// }
 
 	return (
 		

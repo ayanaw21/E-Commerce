@@ -13,10 +13,12 @@ class UserAdmin(BaseUserAdmin):
     list_filter = ('is_staff', 'is_active', 'is_verified')
     search_fields = ('email', 'first_name', 'last_name')
     ordering = ('-created_at',)
+    readonly_fields = ('created_at','updated_at',)
+
 
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal Info', {'fields': ('first_name', 'last_name', 'profile_image')}),
+        ('Personal Info', {'fields': ('first_name', 'last_name','is_verified', 'profile_image')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_admin', 'is_superuser')}),
         ('Important dates', {'fields': ('last_login', 'created_at', 'updated_at')}),
     )

@@ -8,6 +8,9 @@ const Navbar = async () => {
 	const cookie = (await cookies()).get("session")?.value;
 	const session = await decrypt(cookie);
 
+
+
+
 	return (
 		<div>
 			<nav className="bg-white border-gray-200 dark:bg-gray-900">
@@ -46,6 +49,11 @@ const Navbar = async () => {
 									Logout
 								</Button>
 							</form>
+							{/* <form action={getProfile}>
+								<Link href="/profile">
+
+								</Link>
+							</form> */}
 						</div>
 					)}
 				</div>

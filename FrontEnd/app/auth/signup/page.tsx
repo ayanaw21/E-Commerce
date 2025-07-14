@@ -6,8 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
+
   CardHeader,
   CardTitle,
   CardAction,
@@ -15,12 +14,14 @@ import {
 import Link from "next/link";
 import FormInput from "@/components/FormInput";
 import SubmitButton from "@/components/SubmitButton";
-import { useState } from "react";
+import { useActionState } from "react";
+import { register } from "../actions";
+// import { useState } from "react";
 
 export default function Register() {
   const router = useRouter();
   // const [error, setError] = useState<string | null>(null);
-
+  const [state,registerAction] = useActionState(register,undefined)
   async function handleRegister(formData: FormData) {
     try {
       const formDataToSend = new FormData();
@@ -49,7 +50,7 @@ export default function Register() {
       }
     } catch (error) {
       console.error("Register error", error);
-      setError(error instanceof Error ? error.message : "Registration failed");
+      // setError(error instanceof Error ? error.message : "Registration failed");
     }
   }
 
@@ -65,7 +66,7 @@ export default function Register() {
           </CardAction>
         </CardHeader>
         <CardContent>
-          <form action={handleRegister}>
+          <form action={registerAction}>
             <FormInput type="text" name="first_name" label="First Name" />
             <FormInput type="text" name="last_name" label="Last Name" />
             <FormInput type="email" name="email" label="Email" />
