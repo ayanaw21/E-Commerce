@@ -16,19 +16,13 @@ import Link from "next/link";
 import { login } from "../actions";
 import { useActionState, useEffect } from "react";
 
-// interface LoginState {
-// 	error: string | null;
-// 	status: number | null;
-// }
-
 export default function Login() {
 	const [state, loginAction] = useActionState(login, null);
 	useEffect(() => {
-    if (state?.redirect) {
-      window.location.href = state.redirect;
-    }
-  }, [state]);
-
+		if (state?.redirect) {
+			window.location.href = state.redirect;
+		}
+	}, [state]);
 
 	return (
 		<div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -47,8 +41,12 @@ export default function Login() {
 				<CardContent>
 					<form action={loginAction}>
 						<div className="flex flex-col gap-6">
-							{state.error && (
-								<p className="text-red-500">{state.error}</p>
+							{state?.error && (
+								<p className="text-red-500">
+									{state.error}
+									{state.status &&
+										` (Status: ${state.status})`}
+								</p>
 							)}
 							<div className="grid w-full max-w-sm items-center gap-3">
 								<Label htmlFor="email">Email address</Label>
