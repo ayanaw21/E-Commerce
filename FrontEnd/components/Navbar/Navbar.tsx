@@ -9,7 +9,7 @@ import { fetchProfile } from "@/app/utils/actions";
 const Navbar = async () => {
 	const cookie = (await cookies()).get("session")?.value;
 	const session = await decrypt(cookie);
-	const profile = await fetchProfile(session.access);
+	const profile = session ? await fetchProfile(session.access) : null;
 
 	return (
 		<div>
