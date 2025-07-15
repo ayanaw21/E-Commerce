@@ -2,8 +2,8 @@ import Link from "next/link";
 import React from "react";
 import { decrypt } from "@/lib/sessions";
 import { cookies } from "next/headers";
-import { Button } from "./ui/button";
 import { logout } from "@/app/auth/actions";
+import { Button } from "./ui/button";
 const Navbar = async () => {
 	const cookie = (await cookies()).get("session")?.value;
 	const session = await decrypt(cookie);
