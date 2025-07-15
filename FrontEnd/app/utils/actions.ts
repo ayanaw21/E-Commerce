@@ -8,9 +8,7 @@ export async function fetchProfile(token: string): Promise<ProfileData> {
 		},
 	});
 
-	if (!response.ok) {
-		throw new Error(`HTTP error! status: ${response.status}`);
-	}
+	
     const data:ProfileData = await response.json()
     console.log(data)
 	return data;
