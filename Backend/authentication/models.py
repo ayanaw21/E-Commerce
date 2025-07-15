@@ -1,6 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 import uuid
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.contrib.auth import get_user_model
+
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -10,9 +14,9 @@ class CustomUserManager(BaseUserManager):
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         if password:
-            user.set_password(password)  # hashes and saves in 'password' field
+            user.set_password(password)  
         else:
-            user.password = None  # optional if user signs up with Google
+            user.password = None  
         user.save(using=self._db)
         return user
 
@@ -50,11 +54,29 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = CustomUserManager()
 
+    class Meta:
+        verbose_name = "User"
+        verbose_name_plural = "Users"
+        ordering = ['-created_at']
+
     def __str__(self):
         return self.email
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    bio = models.TextField(blank=True)
+    phone_number = models.CharField(max_length=20, blank=True)
+    address = models.CharField(max_length=255, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "User Profile"
+        verbose_name_plural = "User Profiles"
 
     def __str__(self):
-        return self.user.email
+        return f"Profile of {self.user.email}"
+
+@receiver(post_save, sender=get_user_model())
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)

@@ -10,7 +10,7 @@ from django.urls import reverse
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model, authenticate
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404,render
 from django.contrib.sites.shortcuts import get_current_site
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -34,6 +34,9 @@ from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
+
+
+
 
 User = get_user_model()
 
@@ -109,6 +112,7 @@ class LoginView(views.APIView):
             'refresh': str(refresh),
             'access': str(refresh.access_token),
             'redirect_url': redirect_url,
+            'user_id': user.id,
         })
 
 class LogoutView(views.APIView):
@@ -197,6 +201,7 @@ class GoogleLoginView(SocialLoginView):
             redirect_url = "/admin/" if user.is_admin else "/dashboard/"
 
             user_info = {
+                "user_id": user.id,
                 "email": user.email,
                 "first_name": user.first_name,
                 "last_name": user.last_name,
@@ -212,10 +217,14 @@ class GoogleLoginView(SocialLoginView):
 
         return response
 
-class ProfileAPIView(generics.RetrieveUpdateAPIView):
+class UserProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
-        return Profile.objects.get(user__email=self.request.user.email)
+        return self.request.user.profile
     
+
+
+def Register(request):
+    return render(request,'authentication/register_page.html')
