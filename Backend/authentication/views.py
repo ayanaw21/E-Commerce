@@ -10,7 +10,7 @@ from django.urls import reverse
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model, authenticate
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404,render
 from django.contrib.sites.shortcuts import get_current_site
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -34,6 +34,9 @@ from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
+
+
+
 
 User = get_user_model()
 
@@ -221,3 +224,7 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user.profile
     
+
+
+def Register(request):
+    return render(request,'authentication/register_page.html')

@@ -9,9 +9,11 @@ from .views import (
     SetNewPasswordAPIView,
     GoogleLoginView,
     UserProfileView,
+    Register,
 )
 
 urlpatterns = [
+    path('',Register),
     path('register/', RegisterView.as_view(), name='register'),
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
