@@ -15,6 +15,7 @@ import {
 import Link from "next/link";
 import { login } from "../actions";
 import { useActionState, useEffect } from "react";
+import GoogleLoginButton from "@/components/GoogleLoginButton";
 
 export default function Login() {
 	const [state, loginAction] = useActionState(login, null);
@@ -74,9 +75,7 @@ export default function Login() {
 					</form>
 				</CardContent>
 				<CardFooter className="flex-col gap-2">
-					<Button variant="outline" className="w-full">
-						Login with Google
-					</Button>
+					<GoogleLoginButton />
 				</CardFooter>
 			</Card>
 		</div>
