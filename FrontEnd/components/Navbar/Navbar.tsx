@@ -2,11 +2,14 @@ import Link from "next/link";
 import React from "react";
 import { decrypt } from "@/lib/sessions";
 import { cookies } from "next/headers";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { logout } from "@/app/auth/actions";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { fetchProfile } from "@/app/utils/actions";
 const Navbar = async () => {
 	const cookie = (await cookies()).get("session")?.value;
 	const session = await decrypt(cookie);
+	const profile = await fetchProfile(session.access);
 
 	return (
 		<div>
@@ -38,13 +41,27 @@ const Navbar = async () => {
 					) : (
 						<div className="flex items-center space-x-6 rtl:space-x-reverse">
 							<form action={logout}>
-								<Button
-									type="submit"
-									variant="link"
-									className="text-sm text-blue-600 dark:text-blue-500 hover:underline"
-								>
-									Logout
-								</Button>
+								<div className="flex flex-row flex-wrap items-center gap-6">
+									<Button
+										type="submit"
+										variant="link"
+										className="text-sm text-blue-600 dark:text-blue-500 hover:underline"
+									>
+										Logout
+									</Button>
+									<Link
+										href="/profile"
+										className="text-amber-950"
+									>
+										<Avatar>
+											<AvatarImage
+												// src="https://github.com/evilrabbit.png"
+												alt="@evilrabbit"
+											/>
+											<AvatarFallback>{profile.first_name?.charAt(0)}</AvatarFallback>
+										</Avatar>
+									</Link>
+								</div>
 							</form>
 						</div>
 					)}
