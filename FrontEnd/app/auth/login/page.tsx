@@ -2,7 +2,6 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-
 import {
 	Card,
 	CardAction,
@@ -14,16 +13,39 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import { login } from "../actions";
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
+import axios from "axios";
 
 export default function Login() {
 	const [state, loginAction] = useActionState(login, null);
+	const [checkingSession, setCheckingSession] = useState(true);
+
+	useEffect(() => {
+		// ✅ Check if already logged in
+		const checkSession = async () => {
+			try {
+				const res = await axios.get("/api/session/verify");
+				if (res.data.loggedIn) {
+					window.location.href = "/dashboard"; // or custom redirect
+				}
+			} catch (err) {
+				console.error("Session check failed:", err);
+			} finally {
+				setCheckingSession(false); // Show login UI if not redirected
+			}
+		};
+
+		checkSession();
+	}, []);
+
 	useEffect(() => {
 		if (state?.redirect) {
 			window.location.href = state.redirect;
 		}
 	}, [state]);
+
+	if (checkingSession) return null; // ⏳ Wait for session check
 
 	return (
 		<div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">

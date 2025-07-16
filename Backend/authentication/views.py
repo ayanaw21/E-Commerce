@@ -181,6 +181,7 @@ class GoogleLoginView(SocialLoginView):
     serializer_class = AccessTokenOnlySocialLoginSerializer
 
     def post(self, request, *args, **kwargs):
+        print("POST data:", request.data)  # Add this for debugging
         response = super().post(request, *args, **kwargs)
 
         if response.status_code == 200:

@@ -1,130 +1,65 @@
 "use client";
 
-import {
-	GoogleOAuthProvider,
-	GoogleLogin,
-	CredentialResponse,
-} from "@react-oauth/google";
-import { jwtDecode, JwtPayload } from "jwt-decode";
-import axios, { AxiosError } from "axios";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-
-interface DecodedGoogleToken extends JwtPayload {
-	aud: string;
-	email: string;
-	email_verified: boolean;
-	sub: string;
-	name?: string;
-	picture?: string;
-}
-
-interface AuthResponse {
-	token: string;
-}
+import axios from "axios";
 
 const GoogleLoginButton = () => {
 	const router = useRouter();
-	const [showFallback, setShowFallback] = useState(false);
 
-	// Validate environment variables
 	useEffect(() => {
-		if (!process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID) {
-			console.error("Missing Google Client ID!");
-		}
-		if (!process.env.NEXT_PUBLIC_BACKEND_URL) {
-			console.error("Missing Backend URL!");
-		}
+		
+		const script = document.createElement("script");
+		script.src = "https://accounts.google.com/gsi/client";
+		script.async = true;
+		script.defer = true;
+		document.body.appendChild(script);
 	}, []);
-const handleSuccess = async (credentialResponse: CredentialResponse) => {
-  try {
-    if (!credentialResponse.credential) {
-      throw new Error("No credential received from Google");
-    }
+const handleGoogleLogin = () => {
+	if (!window.google || !process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID) {
+		alert("Google Client not initialized");
+		return;
+	}
 
-    // Additional validation
-    if (!process.env.NEXT_PUBLIC_BACKEND_URL) {
-      throw new Error("Backend URL not configured");
-    }
+	const tokenClient = window.google.accounts.oauth2.initTokenClient({
+		client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+		scope: "profile email",
+		callback: async (tokenResponse) => {
+			try {
+				const response = await axios.post(
+					`${process.env.NEXT_PUBLIC_BACKEND_URL}/google/`,
+					{
+						access_token: tokenResponse.access_token,
+					},
+					{ headers: { "Content-Type": "application/json" } }
+				);
 
-    const decoded = jwtDecode<DecodedGoogleToken>(credentialResponse.credential);
-    
-    // More comprehensive validation
-    if (!decoded.email_verified) {
-      throw new Error("Email not verified by Google");
-    }
+				
+				await axios.post("/api/session", {
+					token: response.data.key,
+					user: response.data.user,
+				});
 
-    const csrfToken = document?.cookie.match(/csrftoken=([^;]+)/)?.[1];
-    
-    const response = await axios.post<AuthResponse>(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/google/`,
-      {
-        token: credentialResponse.credential, // Simplify payload
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          ...(csrfToken && { "X-CSRFToken": csrfToken }),
-          // Add authorization header if needed
-        },
-        validateStatus: (status) => status < 500, // Don't throw for 4xx errors
-      }
-    );
+				
+				router.push(response.data.redirect_url || "/dashboard");
+			} catch (error) {
+				console.error("Login Failed:", error);
+				alert("Google login failed. Check console.");
+			}
+		},
+	});
 
-    // Handle different error responses more gracefully
-    if (response.status >= 400) {
-      const errorData = response.data as { detail?: string };
-      throw new Error(errorData.detail || "Authentication failed");
-    }
-
-    // Secure token storage
-    if (typeof window !== "undefined") {
-      localStorage.setItem("authToken", response.data.token);
-      // Consider using HttpOnly cookies instead for better security
-    }
-
-    router.push("/dashboard");
-  } catch (error) {
-    console.error("Login Failed:", error);
-    
-    let errorMessage = "Login failed. Please try again.";
-    if (axios.isAxiosError(error)) {
-      errorMessage = error.response?.data?.detail || error.message;
-    } else if (error instanceof Error) {
-      errorMessage = error.message;
-    }
-    
-    alert(errorMessage);
-  }
+	tokenClient.requestAccessToken();
 };
 
 	return (
 		<div className="google-auth-container">
-			<GoogleOAuthProvider
-				clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}
+			<button
+				onClick={handleGoogleLogin}
+				className="bg-white text-black px-4 py-2 rounded shadow"
 			>
-				<GoogleLogin
-					onSuccess={handleSuccess}
-					onError={() => {
-						console.log("One-Tap dismissed - showing fallback");
-						setShowFallback(true);
-					}}
-					useOneTap
-					auto_select
-					text="continue_with"
-					shape="rectangular"
-				/>
-			</GoogleOAuthProvider>
-
-			{showFallback && (
-				<div className="fallback-auth">
-					<p>Or sign in manually:</p>
-					<GoogleLogin
-						onSuccess={handleSuccess}
-						onError={() => alert("Google login failed")}
-					/>
-				</div>
-			)}
+				Login with Google
+			</button>
 		</div>
 	);
 };
