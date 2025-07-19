@@ -6,12 +6,12 @@ export async function login(prevState: any, formData: FormData) {
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
 
-  if (!email || !password) {
-    return {
-      error: "Email and password are required",
-      status: 400,
-    };
-  }
+//   if (!email || !password) {
+//     return {
+//       error: "Email and password are required",
+//       status: 400,
+//     };
+//   }
 
   try {
     const res = await fetch("http://127.0.0.1:8000/login/", {
@@ -20,15 +20,15 @@ export async function login(prevState: any, formData: FormData) {
       body: JSON.stringify({ email, password }),
     });
 
-    console.log("Response status:", res.status);
+    // console.log("Response status:", res.status);
 
-    if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      return {
-        error: errorData.message || "Login failed",
-        status: res.status,
-      };
-    }
+    // if (!res.ok) {
+    //   const errorData = await res.json().catch(() => ({}));
+    //   return {
+    //     error: errorData.message || "Login failed",
+    //     status: res.status,
+    //   };
+    // }
 
     const data = await res.json();
     if (!data.access) {
@@ -37,7 +37,7 @@ export async function login(prevState: any, formData: FormData) {
         status: 500,
       };
     }
-
+	
     await createSession(data.access);
     
     // Return the redirect URL to handle it on the client side
@@ -119,7 +119,7 @@ export async function register(
 			};
 		}
 
-		redirect("/auth/login"); // Successful redirect
+		redirect("/auth/login"); 
 	} catch (error) {
 		console.error("Registration error:", error);
 		return {
@@ -129,8 +129,4 @@ export async function register(
 	}
 }
 
-// export async function getProfile(){
-// 	const cookie = (await cookies()).get("session")?.value;
-// 	const session = decrypt(cookie)
 
-// }

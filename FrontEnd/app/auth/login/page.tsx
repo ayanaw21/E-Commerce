@@ -22,7 +22,7 @@ export default function Login() {
 	const [checkingSession, setCheckingSession] = useState(true);
 
 	useEffect(() => {
-		// ✅ Check if already logged in
+		
 		const checkSession = async () => {
 			try {
 				const res = await axios.get("/api/session/verify");
@@ -77,7 +77,7 @@ export default function Login() {
 									type="email"
 									name="email"
 									id="email"
-									required
+									
 								/>
 							</div>
 
@@ -87,7 +87,7 @@ export default function Login() {
 									type="password"
 									name="password"
 									id="password"
-									required
+									
 								/>
 							</div>
 							<Button type="submit" className="w-full">
