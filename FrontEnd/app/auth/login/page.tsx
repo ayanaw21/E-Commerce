@@ -22,7 +22,6 @@ export default function Login() {
 	const [checkingSession, setCheckingSession] = useState(true);
 
 	useEffect(() => {
-		
 		const checkSession = async () => {
 			try {
 				const res = await axios.get("/api/session/verify");
@@ -73,32 +72,33 @@ export default function Login() {
 							)}
 							<div className="grid w-full max-w-sm items-center gap-3">
 								<Label htmlFor="email">Email address</Label>
-								<Input
-									type="email"
-									name="email"
-									id="email"
-									
-								/>
+								<Input type="email" name="email" id="email" />
 							</div>
 
 							<div className="grid gap-2">
-								<Label htmlFor="password">Password</Label>
+								<div className="flex items-center">
+									<Label htmlFor="password">Password</Label>
+									<a
+										href="#"
+										className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+									>
+										Forgot your password?
+									</a>
+								</div>
 								<Input
 									type="password"
 									name="password"
 									id="password"
-									
 								/>
 							</div>
 							<Button type="submit" className="w-full">
 								Login
 							</Button>
+							<GoogleLoginButton />
 						</div>
 					</form>
 				</CardContent>
-				<CardFooter className="flex-col gap-2">
-					<GoogleLoginButton />
-				</CardFooter>
+				{/* <CardFooter className="flex-col gap-2 w-full"></CardFooter> */}
 			</Card>
 		</div>
 	);

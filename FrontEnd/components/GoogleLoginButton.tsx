@@ -56,7 +56,7 @@ const handleGoogleLogin = () => {
 		<div className="google-auth-container">
 			<button
 				onClick={handleGoogleLogin}
-				className="bg-white text-black px-4 py-2 rounded shadow"
+				className="bg-white w-full text-black px-4 py-2 rounded shadow"
 			>
 				Login with Google
 			</button>
